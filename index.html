@@ -883,9 +883,55 @@
       document.getElementById('summaryPill').textContent = counts.postsVal + ' Posts, ' + counts.reelsVal + ' Reels, ' + counts.storiesVal + ' Stories';
     }
 
-    function simulateSubmit() {
-      const msg = document.getElementById('quoteMsg');
-      if (msg) msg.classList.remove('hidden');
+    async function simulateSubmit() {
+      const name = document.getElementById('brandName').value.trim();
+      const email = document.getElementById('brandEmail').value.trim();
+      const phone = document.getElementById('brandPhone').value.trim();
+
+      if (!name || !email || !phone) {
+        alert('Please fill in your Brand Name, Email, and Phone before submitting.');
+        return;
+      }
+
+      const btn = document.querySelector('[onclick="simulateSubmit()"]');
+      const originalHTML = btn ? btn.innerHTML : '';
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '⏳ Sending…';
+      }
+
+      const deliverables = document.getElementById('summaryPill').textContent;
+
+      try {
+        const res = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({
+            access_key: '9731f5bb-b4ae-46de-9f6a-9b01f1660eae',
+            subject: 'New Quote Request from ' + name,
+            from_name: 'ADWERTIZE Website',
+            name: name,
+            email: email,
+            phone: phone,
+            deliverables: deliverables,
+            message: 'Brand: ' + name + '\nEmail: ' + email + '\nPhone: ' + phone + '\nDeliverables: ' + deliverables
+          })
+        });
+        const data = await res.json();
+        if (data.success) {
+          const msg = document.getElementById('quoteMsg');
+          if (msg) msg.classList.remove('hidden');
+          if (btn) btn.classList.add('hidden');
+        } else {
+          throw new Error('Submission failed');
+        }
+      } catch (err) {
+        alert('Something went wrong. Please try again or contact us via WhatsApp.');
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = originalHTML;
+        }
+      }
     }
 
     // Product Image Bundles
