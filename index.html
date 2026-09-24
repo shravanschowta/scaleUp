@@ -514,6 +514,7 @@
               class="w-full h-full object-cover"
               src="portfolio/reels.mp4?v=2"
               controls
+              controlslist="nofullscreen"
               preload="metadata"
               playsinline
             ></video>
@@ -1091,6 +1092,19 @@
       if (img) img.src = productImages[activeLightboxProduct][idx];
       if (titleEl) titleEl.textContent = 'Product 0' + activeLightboxProduct + ' · Image ' + (idx + 1) + ' of ' + productImages[activeLightboxProduct].length;
     }
+
+    const reelVideo = document.querySelector('#reels video');
+    const mobileReelQuery = window.matchMedia('(max-width: 767px)');
+    function updateReelFullscreenControl() {
+      if (!reelVideo) return;
+      if (mobileReelQuery.matches) {
+        reelVideo.removeAttribute('controlslist');
+      } else {
+        reelVideo.setAttribute('controlslist', 'nofullscreen');
+      }
+    }
+    updateReelFullscreenControl();
+    mobileReelQuery.addEventListener('change', updateReelFullscreenControl);
 
     // Keyboard navigation (Escape, Left, Right)
     document.addEventListener('keydown', (e) => {
